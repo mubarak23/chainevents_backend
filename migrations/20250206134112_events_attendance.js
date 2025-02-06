@@ -3,7 +3,7 @@
  * @returns { Promise<void> }
  */
 export const up = function (knex) {
-  return knex.schema.createTable("event_attendance", function (table) {
+  return knex.schema.createTable("events_attendance", function (table) {
     table.increments("id").primary();
     table.string("event_id").notNullable();
     table.string("user_address").notNullable();
@@ -19,5 +19,5 @@ export const up = function (knex) {
  * @returns { Promise<void> }
  */
 export const down = function (knex) {
-  return knex.schema.dropTableIfExists("event_attendance");
+  return knex.schema.dropTableIfExists("events_attendance");
 };

@@ -16,12 +16,12 @@ class EventModels {
   }
 
   static async findEventById(event_id) {
-    const event = db("events").where({id: event_id}).first();
+    const event = await db("events").where({id: event_id}).first();
     return event;
   }
 
   static async findEventsByOwner(event_owner) {
-    const events = db("events").where({ event_owner: event_owner});
+    const events = await db("events").where({ event_owner: event_owner});
     return events;
   }
 
@@ -61,9 +61,9 @@ class EventModels {
   }
 
   // event registration functions
-  
+
   static async register_for_event(event_id, user_address){
-    const [event_registration] = db("event_registrations").insert({
+    const [event_registration] = await db("events_registrations").insert({
       event_id,
       user_address
     });
@@ -71,18 +71,74 @@ class EventModels {
   };
 
     static async getRegisteredUsers(event_id) {
-    return await db("event_registrations")
+    return await db("events_registrations")
       .where({ event_id, is_active: true })
       .select("user_address");
   }
 
   static async isUserRegistered(event_id, user_address) {
-    const registration = await db("event_registrations")
+    const registration = await db("events_registrations")
       .where({ event_id, user_address, is_active: true })
       .first();
     return !!registration;
   }
 
+  // Event Attendance
+   static async markEventAttendance(event_id, user_address){
+    const [event_registration] = await db("events_attendance").insert({
+      event_id,
+      user_address
+    });
+    return event_registration;
+  };  
+
+  static async getEventAttendance(event_id) {
+    return await db("events_attendance").where(event_id).select("user_address");
+  }
+
+  static async hasUserAttendedEvent(event_id, user_address) {
+    const attendance = await db("events_attendance")
+      .where({ event_id, user_address })
+      .first();
+    return !!attendance;
+  }
+
+  static async endEventRegistration(event_id) {
+    await db("events")
+      .where({ event_id })
+      .update({ open_for_registration: false });
+    return true;
+  }
+
+     static async isEventOpenForRegistration(event_id) {
+    const event = await db("events")
+      .where({ event_id })
+      .first();
+    return event.open_for_registration;
+  }
+
+    static async getEventRegistrationCounts(event_id) {
+    const registrations = await db("events_registrations")
+      .where({ event_id, is_active: true })
+      .count("id as count")
+      .first();
+
+    const rsvps = await db("events_rsvps")
+      .where({ event_id })
+      .count("id as count")
+      .first();
+
+    const attendance = await db("events_attendance")
+      .where({ event_id })
+      .count("id as count")
+      .first();
+
+    return {
+      registrations: registrations.count,
+      rsvps: rsvps.count,
+      attendance: attendance.count,
+    };
+  }
 
 
 }

@@ -12,6 +12,7 @@ export const up = function (knex) {
     table.string("event_owner", 255);
     table.string("event_email", 255);
     table.boolean("require_approval", bool);
+    table.boolean("open_for_registration", bool).defaultTo(true);
     table.string("event_capacity", 255);
     table.string("ticket", 255);
     table.string("event_type", 255); // public or private
