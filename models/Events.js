@@ -140,5 +140,55 @@ class EventModels {
     };
   }
 
+    static async getRegisteredUsersForEventWithPagination(
+    event_id,
+    page = 1,
+    per_page = 10
+  ) {
+    const offset = (page - 1) * per_page;
+
+    const registeredUsers = await db("events_registrations")
+      .where({ event_id, is_active: true })
+      .select("user_address")
+      .limit(per_page)
+      .offset(offset);
+
+    const total = await db("events_registrations")
+      .where({ event_id, is_active: true })
+      .count({ count: "*" })
+      .first();
+
+    return {
+      data: registeredUsers,
+      total: total.count,
+      current: page,
+      pages: Math.ceil(total.count / per_page),
+    };
+  }
+
+    static async saveUserEventNFT(data) {
+    const [createdRecord] = await db("events_nft").insert(data).returning("*");
+    return createdRecord;
+  }
+
+  static async retrieveUserEventNFT(id) {
+    const record = await db("events_nft").where({ event_id: id }).first();
+    return record || null;
+  }
+
+    static async updateUserEventNFT(id, updates) {
+    const updatedRows = await knex("events_nft")
+      .where({ event_id: id })
+      .update(updates)
+      .returning("*");
+    return updatedRows.length;
+  }
+
+  static async deleteUserEventNFT(id) {
+    const deletedRows = await knex("events_nft")
+      .where({ event_id: id })
+      .delete();
+    return deletedRows;
+  }
 
 }
