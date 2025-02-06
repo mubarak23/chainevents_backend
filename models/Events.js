@@ -60,4 +60,29 @@ class EventModels {
     return event;
   }
 
+  // event registration functions
+  
+  static async register_for_event(event_id, user_address){
+    const [event_registration] = db("event_registrations").insert({
+      event_id,
+      user_address
+    });
+    return event_registration;
+  };
+
+    static async getRegisteredUsers(event_id) {
+    return await db("event_registrations")
+      .where({ event_id, is_active: true })
+      .select("user_address");
+  }
+
+  static async isUserRegistered(event_id, user_address) {
+    const registration = await db("event_registrations")
+      .where({ event_id, user_address, is_active: true })
+      .first();
+    return !!registration;
+  }
+
+
+
 }
