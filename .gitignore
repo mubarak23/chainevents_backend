@@ -1,4 +1,13 @@
+<<<<<<< HEAD
 node_modules
 .env
 package-lock.json
 dev.sqlite3
+=======
+target
+.snfoundry_cache/
+.snfoundry_cache/
+.DS_Store
+src/.DS_Store
+node_modules/
+>>>>>>> e5dcb3c (chore: yet be push)
