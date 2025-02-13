@@ -1,9 +1,19 @@
 import db from '../config/db.js';
 
 export default class EventModels {
-  static async create_new_events(data) {
-    const [new_event] = db('events').insert(data);
-    return new_event;
+  // static async create_new_events(data) {
+  //   const [new_event] = await db('events').insert(data);
+  //   return new_event;
+  // }
+
+   static async create_new_events(data) {
+    try {
+      const [new_event] = await db('events').insert(data).returning('id'); 
+      return new_event;
+    } catch (error) {
+      console.error("Error inserting event:", error);
+      throw new Error("Failed to create event");
+    }
   }
 
   static async search(keyword) {
@@ -17,6 +27,11 @@ export default class EventModels {
 
   static async findEventById(event_id) {
     const event = await db("events").where({id: event_id}).first();
+    return event;
+  }
+
+   static async findEventByOnChainId(onchain_id) {
+    const event = await db("events").where({ event_onchain_id: onchain_id }).first();
     return event;
   }
 
@@ -68,11 +83,17 @@ export default class EventModels {
 
   // event registration functions
   static async register_for_event(event_id, user_address){
-    const [event_registration] = await db("events_registrations").insert({
+    try {
+      const [event_registration] = await db("events_registrations").insert({
       event_id,
       user_address
     });
     return event_registration;
+    } catch (error) {
+      console.error("Error inserting event:", error);
+      throw new Error("Failed to create event");
+    }
+
   };
 
     static async getRegisteredUsers(event_id) {
@@ -90,11 +111,17 @@ export default class EventModels {
 
   // Event Attendance
    static async markEventAttendance(event_id, user_address){
-    const [event_registration] = await db("events_attendance").insert({
+   try {
+      const [event_registration] = await db("events_attendance").insert({
       event_id,
       user_address
     });
     return event_registration;
+   } catch (error) {
+      console.error("Error inserting event:", error);
+      throw new Error("Failed to create event");
+   }
+
   };  
 
   static async getEventAttendance(event_id) {
@@ -172,8 +199,14 @@ export default class EventModels {
   }
 
     static async saveUserEventNFT(data) {
-    const [createdRecord] = await db("events_nft").insert(data).returning("*");
-    return createdRecord;
+      try {
+          const [createdRecord] = await db("events_nft").insert(data).returning("*");
+          return createdRecord;        
+      } catch (error) {
+        console.error("Error inserting event:", error);
+      throw new Error("Failed to create event");
+      }
+
   }
 
   static async retrieveUserEventNFT(id) {
