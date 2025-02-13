@@ -1,18 +1,13 @@
 import { StreamClient, v1alpha2 } from "@apibara/protocol";
 import {
   FieldElement,
-  Filter,
-  v1alpha2 as starknet,
-  StarkNetCursor,
+  Filter, StarkNetCursor, v1alpha2 as starknet
 } from "@apibara/starknet";
-import { events } from "../config/events";
+import { events } from "../config/events.js";
 import {
-  handleNewEventAdded,
-  handleRegisteredForEvent,
-  handleEventAttendanceMark,
-  handleEndEventRegistration,
-  handleRSVPForEvent,
-} from "./handlers";
+  handleEndEventRegistration, handleEventAttendanceMark, handleNewEventAdded,
+  handleRegisteredForEvent, handleRSVPForEvent
+} from "./handlers.js";
 
 const client = new StreamClient({
   url: process.env.DNA_CLIENT_URL || "", // Fallback to empty string if undefined
@@ -61,6 +56,7 @@ export async function startIndexer() {
           if (!event.event || !event.event.keys || event.event.keys.length === 0) continue;
           const eventKey = FieldElement.toHex(event.event.keys[0]);
           const handler = eventHandlers[eventKey];
+          console.log("event data:", event.event)
           if (handler) {
             await handler(event.event);
           }

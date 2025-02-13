@@ -1,9 +1,11 @@
 import { FieldElement } from "@apibara/starknet";
 import { uint256 } from "starknet";
-import Events from "../models/Event.js";
+import EventModels from "../models/Events.js";
+
 
 
 export async function handleNewEventAdded(event) {
+  // NewEventAdded payload 
   const data = event.data;
 
   const eventDetails = {
@@ -20,18 +22,22 @@ export async function handleNewEventAdded(event) {
     event_owner: FieldElement.toHex(data[4]).toString(),
   };
 
-  let eventExists = await Events.findEventById(eventDetails.event_id);
+  let eventExists = await EventModels.findEventById(eventDetails.event_id);
 
   if (eventExists) {
-    console.log("Event already exists");
+    // UPDATE THE EVENT
+    await EventModels.update_event_by_name(eventDetails.name, eventDetails);
+    console.log("Updating Event that already exists");
     return;
   }
   
-  await Events.create(eventDetails);
+  await EventModels.create(eventDetails);
 }
 
 
 export async function handleRegisteredForEvent(event) {
+
+  // RegisteredForEvent
   const data = event.data;
 
   const registeredForEvent = {
@@ -49,7 +55,7 @@ export async function handleRegisteredForEvent(event) {
 
   console.log(registeredForEvent);
 
-  const hasRegistered = await Events.isUserRegistered(
+  const hasRegistered = await EventModels.isUserRegistered(
     registeredForEvent.event_id,
     registeredForEvent.user_address
   );
@@ -57,13 +63,15 @@ export async function handleRegisteredForEvent(event) {
     console.log("User has already registered");
     return;
   }
-  await Events.registeredForEvent(
+  // register_for_event
+  await Events.register_for_event(
     registeredForEvent.event_id,
     registeredForEvent.user_address
   );
 }
 
 export async function handleEventAttendanceMark(event) {
+  // EventAttendanceMark
   const data = event.data;
 
   const eventAttendanceMark = {
@@ -80,7 +88,7 @@ export async function handleEventAttendanceMark(event) {
 
   console.log(eventAttendanceMark);
 
-  const hasMarkedAttendance = await Events.hasUserAttendedEvent(
+  const hasMarkedAttendance = await EventModels.hasUserAttendedEvent(
     eventAttendanceMark.event_id,
     eventAttendanceMark.user_address
   );
@@ -95,6 +103,7 @@ export async function handleEventAttendanceMark(event) {
 }
 
 export async function handleEndEventRegistration(event) {
+  // EndEventRegistration
   const data = event.data;
 
   const endEventRegistration = {
@@ -112,16 +121,17 @@ export async function handleEndEventRegistration(event) {
 
   console.log(endEventRegistration);
 
-  const eventExists = await Events.findByEventId(endEventRegistration.event_id);
+  const eventExists = await EventModels.findByEventId(endEventRegistration.event_id);
   if (!eventExists) {
     console.log("Event does not exist");
     return;
   }
-  await Events.endEventRegistration(endEventRegistration.event_id);
+  await EventModels.endEventRegistration(endEventRegistration.event_id);
 }
 
 
 export async function handleRSVPForEvent(event) {
+  // RSVPForEvent
   const data = event.data;
 
   const rsvpForEvent = {
@@ -138,7 +148,7 @@ export async function handleRSVPForEvent(event) {
 
   console.log(rsvpForEvent);
 
-  const hasRSVPed = await Events.hasRSVPed(
+  const hasRSVPed = await EventModels.hasRSVPed(
     rsvpForEvent.event_id,
     rsvpForEvent.attendee_address
   );
@@ -146,6 +156,6 @@ export async function handleRSVPForEvent(event) {
     console.log("User has already RSVPed");
     return;
   }
-  await Events.handleRSVPForEvent(rsvpForEvent.event_id, rsvpForEvent.attendee_address);
+  await EventModels.handleRSVPForEvent(rsvpForEvent.event_id, rsvpForEvent.attendee_address);
 }
 
