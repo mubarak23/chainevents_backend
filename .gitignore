@@ -1,4 +1,21 @@
-node_modules
-.env
+# Node.js dependencies
+node_modules/
 package-lock.json
+
+# Environment variables
+.env
+
+# Database files
 dev.sqlite3
+
+# Rust build artifacts
+target/
+
+# Foundry cache
+.snfoundry_cache/
+
+# macOS system files
+.DS_Store
+src/.DS_Store
+
+

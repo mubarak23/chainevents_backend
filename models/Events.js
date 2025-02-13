@@ -1,6 +1,6 @@
-import db from '../config/db';
+import db from '../config/db.js';
 
-class EventModels {
+export default class EventModels {
   static async create_new_events(data) {
     const [new_event] = db('events').insert(data);
     return new_event;
@@ -55,13 +55,18 @@ class EventModels {
     return event;
   }
 
+  static async update_event_by_name(name, data) {
+    await db("events").where({name: name}).update(data);
+    const event = db("events").where({id}).first();
+    return event;
+  }
+
   static async delete_event(id){
     const event = await db("events").where({ id }).del();
     return event;
   }
 
   // event registration functions
-
   static async register_for_event(event_id, user_address){
     const [event_registration] = await db("events_registrations").insert({
       event_id,
