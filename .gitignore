@@ -1,13 +1,21 @@
-<<<<<<< HEAD
-node_modules
-.env
+# Node.js dependencies
+node_modules/
 package-lock.json
+
+# Environment variables
+.env
+
+# Database files
 dev.sqlite3
-=======
-target
+
+# Rust build artifacts
+target/
+
+# Foundry cache
 .snfoundry_cache/
-.snfoundry_cache/
+
+# macOS system files
 .DS_Store
 src/.DS_Store
-node_modules/
->>>>>>> e5dcb3c (chore: yet be push)
+
+
