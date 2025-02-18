@@ -101,3 +101,52 @@ export const fetchEventRegistrationAttendeesForOneEvent = async (req, res) => {
     return failure(res, err.message, [], 500);
   }
 };
+
+// Register for an event 
+export const RegisterForAnEvent = async (req, res) => {
+  try {
+    const {event_id, user_address, email_address} = req.body;
+
+    let new_event_registration = await EventModels.registerForEvent(event_id, user_address, email_address);
+    return success(res, "successful", new_event_registration, 201)
+  } catch (err) {
+     return failure(res, err.message, [], 500);
+  }
+}
+
+// RSVP for an event
+export const RSVPForAnEvent = async (req, res) => {
+    const {event_id, attendee_address} = req.body;
+    let hasUserRegister = await EventModels.hasUserAttendedEvent(event_id, attendee_address);
+    if(!hasUserRegister){
+      return failure(res, "User has not register for the event", [], 400);
+    }
+
+  try {
+    let  rsvp_for_event = await EventModels.rvpsForEvent(event_id, attendee_address);
+    return success(res, "successful", rsvp_for_event, 201)
+  } catch (err) {
+     return failure(res, err.message, [], 500);
+  }
+}
+
+export const ClosedEventForRegistration = async (req, res) => {
+  try {
+    let { id } = req.params;
+    let closed_event_registration = await EventModels.ClosedEventForRegistration(id);
+    return success(res, "successful", closed_event_registration, 200)
+  } catch (err) {
+     return failure(res, err.message, [], 500);
+  }
+}
+
+export const  OpenEventForRegistration = async (req, res) => {
+  try {
+    let { id } = req.params;
+    let closed_event_registration = await EventModels.OpenEventForRegistration(id);
+    return success(res, "successful", closed_event_registration, 201)
+  } catch (err) {
+     return failure(res, err.message, [], 500);
+  }
+}
+
