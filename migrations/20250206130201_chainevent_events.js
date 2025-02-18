@@ -13,11 +13,11 @@ export const up = function (knex) {
     table.string("event_email", 255);
     table.boolean("require_approval").defaultTo(true);
     table.boolean("open_for_registration").defaultTo(true);
-    table.string("event_capacity", 255);
-    table.string("ticket", 255);
+    table.integer("event_capacity", 255);
+    table.string("ticket", 255).nullable();
     table.string("event_type", 255); // public or private
     table.string("event_mode", 255); // free for paid
-    table.string("ticket_amount", 255).nullable(); // amount per ticket
+    table.integer("ticket_amount", 255).nullable(); // amount per ticket
     table.string("event_start_date", 255).nullable();
     table.string("event_end_date", 255).nullable();
     table.string("event_image_url", 255).nullable();
