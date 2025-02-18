@@ -64,29 +64,42 @@ export default class EventModels {
 
   }
 
-  static async update_events(id, data) {
+  static async updateEvent(id, data) {
     await db("events").where({id}).update(data);
     const event = db("events").where({id}).first();
     return event;
   }
 
-  static async update_event_by_name(name, data) {
+    static async ClosedEventForRegistration(id) {
+    await db("events").where({id}).update({ open_for_registration: false});
+    const event = db("events").where({id}).first();
+    return event;
+  }
+
+    static async OpenEventForRegistration(id) {
+    await db("events").where({id}).update({ open_for_registration: true});
+    const event = db("events").where({id}).first();
+    return event;
+  }
+
+  static async updateEventByName(name, data) {
     await db("events").where({name: name}).update(data);
     const event = db("events").where({id}).first();
     return event;
   }
 
-  static async delete_event(id){
+  static async deleteEvent(id){
     const event = await db("events").where({ id }).del();
     return event;
   }
 
   // event registration functions
-  static async register_for_event(event_id, user_address){
+  static async registerForEvent(event_id, user_address, email_address){
     try {
       const [event_registration] = await db("events_registrations").insert({
       event_id,
-      user_address
+      user_address,
+      email_address
     });
     return event_registration;
     } catch (error) {
@@ -96,6 +109,20 @@ export default class EventModels {
 
   };
 
+  // RSVP for an event 
+    static async rvpsForEvent(event_id, attendee_address ){
+    try {
+      const [event_registration] = await db("events_rsvps").insert({
+      event_id,
+      attendee_address,
+    });
+    return event_registration;
+    } catch (error) {
+      console.error("Error inserting event:", error);
+      throw new Error("Failed to create event");
+    }
+
+  };
     static async getRegisteredUsers(event_id) {
     return await db("events_registrations")
       .where({ event_id, is_active: true })
@@ -135,12 +162,12 @@ export default class EventModels {
     return !!attendance;
   }
 
-  static async endEventRegistration(event_id) {
-    await db("events")
-      .where({ event_id })
-      .update({ open_for_registration: false });
-    return true;
-  }
+  // static async endEventRegistration(event_id) {
+  //   await db("events")
+  //     .where({ event_id })
+  //     .update({ open_for_registration: false });
+  //   return true;
+  // }
 
      static async isEventOpenForRegistration(event_id) {
     const event = await db("events")

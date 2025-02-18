@@ -7,6 +7,7 @@ export const up = function (knex) {
     table.increments("id").primary();
     table.string("event_id").notNullable();
     table.string("user_address").notNullable();
+    table.string("email_address").notNullable(false);
     table.boolean("is_active").defaultTo(true);
     table.timestamps(true, true);
 
