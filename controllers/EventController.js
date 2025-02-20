@@ -1,5 +1,5 @@
-import { failure, success } from "../../backend/utils/response.js";
 import EventModels from "../models/Events.js";
+import { failure, success } from "../utils/response.js";
 
 export const AddNewEvent = async (req, res) => {
   try {
