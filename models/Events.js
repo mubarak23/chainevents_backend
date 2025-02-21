@@ -64,6 +64,25 @@ export default class EventModels {
 
   }
 
+    static async paginated_my_event_data(event_owner, page = 1, per_page = 10) {
+     const offset = (page - 1) * per_page;
+      const events = await db("events")
+      .where({ event_owner: event_owner})
+      .select("*")
+      .orderBy("created_at", "desc")
+      .limit(per_page)
+      .offset(offset);
+    const total = await db("events").count({ count: "*" }).first();
+
+     return {
+      data: events,
+      total: total.count,
+      current: page,
+      pages: Math.ceil(total.count / per_page),
+    };
+
+  }
+
   static async updateEvent(id, data) {
     await db("events").where({id}).update(data);
     const event = db("events").where({id}).first();
@@ -95,16 +114,17 @@ export default class EventModels {
 
   // event registration functions
   static async registerForEvent(event_id, user_address, email_address){
+    let data = { event_id, user_address, email_address};
     try {
       const [event_registration] = await db("events_registrations").insert({
-      event_id,
-      user_address,
-      email_address
-    });
+        event_id: data.event_id,
+        user_address: data.user_address,
+        email_address: data.email_address
+      }).returning('id');
     return event_registration;
     } catch (error) {
       console.error("Error inserting event:", error);
-      throw new Error("Failed to create event");
+      throw new Error("Failed to register for an event");
     }
 
   };
@@ -162,12 +182,6 @@ export default class EventModels {
     return !!attendance;
   }
 
-  // static async endEventRegistration(event_id) {
-  //   await db("events")
-  //     .where({ event_id })
-  //     .update({ open_for_registration: false });
-  //   return true;
-  // }
 
      static async isEventOpenForRegistration(event_id) {
     const event = await db("events")

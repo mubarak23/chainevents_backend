@@ -39,8 +39,8 @@ export const SearchEvent = async (req, res) => {
 
 export const EventDetails = async (req, res) => {
   try {
-  let { id } = req.params;
-  let event_details = EventModels.findEventById(id);
+  let { event_id } = req.params;
+  let event_details = await EventModels.findEventById(event_id);
   return success(res, "successful", event_details, 200);
   } catch (err) {
     return failure(res, err.message, [], 500);
@@ -63,11 +63,41 @@ export const fetchEventByEventChainId = async (req, res) => {
   }
 };
 
+// findEventById
+// export const fetchEventByid = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     const event = await Event.findEventByOnChainId(event_onchain_id);
+
+//     if (!event) {
+//       return failure(res, "Event not found", [], 404);
+//     }
+
+//     return success(res, "Event details fetched successfully", event, 200);
+//   } catch (err) {
+//     return failure(res, err.message, [], 500);
+//   }
+// };
+
 
 export const EventByOwner = async (req, res) => {
   try {
   let { event_owner } = req.params;
   let event_details = EventModels.findEventsByOwner(event_owner);
+  return success(res, "successful", event_details, 200);
+  } catch (err) {
+    return failure(res, err.message, [], 500);
+  }
+}
+
+// paginated_my_event_data
+
+export const paginatedEventsByOwner = async (req, res) => {
+  try {
+  let { event_owner } = req.params;
+   const { page = 1, per_page = 10 } = req.query;
+  let event_details = await EventModels.paginated_my_event_data(event_owner, page, per_page);
   return success(res, "successful", event_details, 200);
   } catch (err) {
     return failure(res, err.message, [], 500);
@@ -106,7 +136,11 @@ export const fetchEventRegistrationAttendeesForOneEvent = async (req, res) => {
 export const RegisterForAnEvent = async (req, res) => {
   try {
     const {event_id, user_address, email_address} = req.body;
-
+    
+    let event_details = await EventModels.findEventById(event_id);
+    if(!event_details){
+      return failure(res, "Cannot Register for Event that does Not Exist", [], 500);
+    }
     let new_event_registration = await EventModels.registerForEvent(event_id, user_address, email_address);
     return success(res, "successful", new_event_registration, 201)
   } catch (err) {
