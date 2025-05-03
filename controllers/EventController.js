@@ -139,8 +139,13 @@ export const RegisterForAnEvent = async (req, res) => {
     
     let event_details = await EventModels.findEventById(event_id);
     if(!event_details){
-      return failure(res, "Cannot Register for Event that does Not Exist", [], 500);
+      return failure(res, "Cannot Register for Event that does Not Exist", [], 404);
     }
+    let hasRegister = await EventModels.hasRegisteredForEvent(event_id, user_address, email_address)
+    if(hasRegister){
+      return failure(res, "Already Registered",  [], 400);
+    }
+    
     let new_event_registration = await EventModels.registerForEvent(event_id, user_address, email_address);
     return success(res, "successful", new_event_registration, 201)
   } catch (err) {
