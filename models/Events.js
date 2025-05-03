@@ -112,6 +112,15 @@ export default class EventModels {
     return event;
   }
 
+  static async hasRegisteredForEvent(event_id, user_address, email_address) {
+    const registered = await db("events_registrations").where({event_id, user_address })
+
+    if(registered){
+       return true
+    }
+    return false 
+  }
+
   // event registration functions
   static async registerForEvent(event_id, user_address, email_address){
     let data = { event_id, user_address, email_address};
@@ -222,7 +231,7 @@ export default class EventModels {
 
     const registeredUsers = await db("events_registrations")
       .where({ event_id, is_active: true })
-      .select("user_address")
+      .select("user_address", "email_address")
       .limit(per_page)
       .offset(offset);
 
