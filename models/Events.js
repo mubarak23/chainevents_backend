@@ -113,12 +113,8 @@ export default class EventModels {
   }
 
   static async hasRegisteredForEvent(event_id, user_address, email_address) {
-    const registered = await db("events_registrations").where({event_id, user_address })
-
-    if(registered){
-       return true
-    }
-    return false 
+    const registered = await db("events_registrations").where({event_id, user_address, email_address })
+    return registered.length > 0;
   }
 
   // event registration functions
